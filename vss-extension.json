@@ -1,0 +1,88 @@
+{
+    "manifestVersion": 1,
+    "id": "devkpis",
+    "version": "1.0",
+    "name": "Development KPIs",
+    "description": "Dashboard widgets for development KPIs.",
+    "publisher": "rschiefer",
+    "public": false,
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+            }
+        ],
+    "icons": {
+        "default": "images/icon.png"
+    },
+    "demands": [
+        "contribution/ms.vss-dashboards-web.widget-sdk-version-2", 
+        "contribution/ms.vss-web.charts-service"
+    ],
+    "contributions": [
+        {
+            "id": "rschiefer.devkpis.deploymentFrequency",
+            "type": "ms.vss-dashboards-web.widget",
+            "description": "A dashboard widget to display deployment frequency over time.",
+            "targets": [
+                "ms.vss-dashboards-web.widget-catalog"
+            ],
+            "properties": {
+                "name": "Deployment Frequency",
+                "description": "A dashboard widget to display deployment frequency over time.",
+                "catalogIconUrl:": "images/icon.png",
+                "previewImageUrl": "images/preview.png",                            
+                "uri": "index.html",
+                "supportedSizes": [
+                    {
+                        "rowSpan": 2,
+                        "columnSpan": 3
+                    }
+                ],
+                "supportedScopes": ["project_team"]
+            }
+        }
+    ],
+    "files": [
+        {
+            "path": "images", "addressable": true
+        },
+        {
+            "path": "scripts", "addressable": true
+        },
+        {
+            "path": "index.html", "addressable": true
+        }
+    ],
+    "categories": [
+        "Build and release"
+    ],
+    "content": {
+        "details": {
+          "path": "readme.md"
+        }
+    },
+    "repository": {
+        "type": "git",
+        "uri": "https://github.com/rschiefer/AzureDevops-DevKPIs"
+    },
+    "links": {
+        "repository": {
+          "uri": "https://github.com/rschiefer/AzureDevops-DevKPIs"
+        },
+        "issues": {
+          "uri": "https://github.com/rschiefer/AzureDevops-DevKPIs/issues"
+        }
+    },
+    "tags": [
+        "Dashboard",
+        "KPI",
+        "Productivity",
+        "Widget",
+        "Build",
+        "Release",
+        "Activity"
+    ],
+    "scopes": [
+        "vso.build"
+    ]
+}

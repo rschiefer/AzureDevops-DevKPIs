@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="scripts/VSS.SDK.min.js"></script>
+    <style>
+        #status {
+            position: absolute;
+            bottom: 10px;
+            font-size: 0.70em;
+            left: 0;
+            right: 0;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="widget">
+        <h2 class="title">Builds</class>
+        <div id="status"></div>
+        <div id="Chart-Container"></div>
+    </div>
+</body>
+<script type="text/javascript">
+    VSS.init({
+        explicitNotifyLoaded: true,
+        usePlatformStyles: true
+    });
+    VSS.ready(function() {
+
+        VSS.require(["TFS/Dashboards/WidgetHelpers", "TFS/Build/RestClient", "Charts/Services"],
+        function (WidgetHelpers, TFS_Build_WebApi, TFS_Charts) {
+            WidgetHelpers.IncludeWidgetStyles();
+            VSS.register("agebase.build-overview-widget", function () {
+                var getChart = function () {
+
+                    var projectId = VSS.getWebContext().project.id;
+
+                    var sevenDaysAgo = new Date();
+                    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+                    return TFS_Build_WebApi.getClient().getBuilds(projectId, null, null, null, sevenDaysAgo).then(
+                        function (builds) {
+                            return TFS_Charts.ChartsService.getService().then(
+                                function (chartService) {
+
+                                    var succeededCount = 0;
+                                    var failedCount = 0;
+
+                                    builds.forEach(function (build) {
+                                        if (build.result === 2) {
+                                            succeededCount = succeededCount + 1;
+                                        } else {
+                                            failedCount = failedCount + 1;
+                                        }
+                                    });
+
+                                    var percentage = (succeededCount / builds.length * 100);
+
+                                    $("#status").text(Math.round(percentage) + "% succeeded")
+
+                                    var $container = $('#Chart-Container');
+                                    var chartOptions = {
+                                        "chartType": "pie",
+                                        "hostOptions": {
+                                            "height": 120,
+                                            "width:": 120
+                                        },
+                                        "suppressMargin": true,
+                                        "legend": {
+                                            "enabled": false
+                                        },
+                                        "tooltip": {
+                                            "enabled": false
+                                        },
+                                        "specializedOptions": {
+                                            "showLabels": false,
+                                            "center": [46, 32]
+                                        },
+                                        "series": [{
+                                            "data": [{
+                                                    "name": "Failed",
+                                                    "color": "#E02D30",
+                                                    "y": failedCount
+                                                },
+                                                {
+                                                    "name": "Succeeded",
+                                                    "color": "#357924",
+                                                    "y": succeededCount
+                                                }
+                                            ]
+                                        }]
+                                    };
+                                    chartService.createChart($container, chartOptions);
+                                    return WidgetHelpers.WidgetStatusHelper.Success();
+                                });
+                        },
+                        function (error) {
+                            return WidgetHelpers.WidgetStatusHelper.Failure(error.message);
+                        }
+                    );
+                }
+                return {
+                    load: function () {
+                        return getChart();
+                    }
+                }
+            });
+            VSS.notifyLoadSucceeded();
+        });
+    });
+</script>
+
+</html>
